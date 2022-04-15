@@ -8,6 +8,8 @@ import styles from "./app.module.scss"
 
 //FILE-SAVER
 import { saveAs } from 'file-saver' 
+import domtoimage from 'dom-to-image';
+
 
 //TUAST
 import { notify } from "./tuast";
@@ -17,7 +19,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
 
 //STATES
-  const [ img , setimg ] = useState({ profileImg: icon })   
+  const [ img , setimg ] = useState({ Image: icon }) 
   const [ data , setData ] = useState({
     blur: 0,
     britness: 100,
@@ -47,7 +49,7 @@ const App = () => {
   
 //DESTRUCTURING
     const { blur , britness , saturate , contrast , grayscale } = data
-    const { profileImg } = img
+    const { Image } = img
 
 //UPLOAD IMG
    const imageHandler = (e) => {
@@ -55,16 +57,23 @@ const App = () => {
         const reader = new FileReader();
         reader.onload = () =>{
             if(reader.readyState === 2){
-                setimg({profileImg: reader.result})
+                setimg({Image: reader.result})
             }
         }
         reader.readAsDataURL(e.target.files[0])
   }
 
 //DOWNLOAD IMG 
+  
   const downloadHandler = () =>{
-      if ( profileImg !== icon && data !== defultData  ){
-        notify( true , "download sucsses!" );
+      if ( Image !== icon && data !== defultData  ){
+        const number = Math.floor(Math.random() * 100000);
+        notify( true , "download sucsses!" )
+        domtoimage.toBlob( document.getElementById("img") )
+          .then(function ( blog ) {
+            saveAs( blog , `image_${ number }.jpg` )
+      })
+        
       } else {
           notify( false , "plese upload your image or make some changes" )
       }
@@ -138,15 +147,16 @@ const App = () => {
       </div>
       <div className={ styles.img_bar } >
       <img 
-            className={ styles.img }
-          src={ profileImg } 
+          className={ styles.img }
+          src={ Image } 
+          id = "img"
           alt="d" 
           style={{filter: `
-              saturate(${saturate}%) 
-              blur(${blur}px) 
-              brightness(${britness}%) 
-              contrast(${contrast}%) 
-              grayscale(${grayscale}%)`  
+          saturate(${saturate}%) 
+          blur(${blur}px) 
+          brightness(${britness}%) 
+          contrast(${contrast}%) 
+          grayscale(${grayscale}%)`  
              }}
            />
       </div>
